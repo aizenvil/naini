@@ -1,0 +1,61 @@
+<?php
+    include('database.php');
+    if(!loggedin()){
+        header("location:login.php");
+    }
+	$username = $_SESSION['username'];
+	error();
+
+    if(isset($_GET['taskid'])) {
+        $taskid = $_GET['taskid'];
+        $task = getTaskById($username, $taskid);
+    } else {
+        // Handle jika taskid tidak valid
+        header("location:todo.php");
+    }
+
+    if(isset($_POST['edittask'])) {
+        $newDescription = $_POST['description'];
+        $newProgress = $_POST['progress'];
+        $newDate = $_POST['tanggal'];
+        updateTask($taskid, $newDescription, $newProgress, $newDate);
+        // Redirect kembali ke halaman tugas setelah berhasil mengedit
+        header("location:todo.php");
+    }
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Task</title>
+</head>
+<body>
+    <?php include('navbar.php'); ?>
+    <div  id="changepass">
+        <br>
+        <h3>Edit Task</h3>
+        <br>
+        <form method="POST" action="edit_task.php?taskid=<?php echo $taskid; ?>">
+        <table>
+            <tbody>
+                <tr>
+                    <td><input type="text" size="50" placeholder="Task" name="description" value="<?php echo $task['task']; ?>" autocomplete="off"/>   </td>
+                </tr>
+                <tr><td>
+                <div class="form-group">
+                    <select class="form-control" name="progress">
+                        <option value="Not Yet Started" <?php if ($task['progress'] === 'Not Yet Started') echo 'selected'; ?>>Not Yet Started</option>
+                        <option value="In Progress" <?php if ($task['progress'] === 'In Progress') echo 'selected'; ?>>In Progress</option>
+                        <option value="Waiting On" <?php if ($task['progress'] === 'Waiting On') echo 'selected'; ?>>Waiting On</option>
+                    </select>
+                </div>
+                </td></tr>
+                <tr><td><input type="date" id="date" name="tanggal" value="<?php echo $task['tanggal']; ?>"></td></tr>
+                <tr><td><input class="btn btn-outline-dark" type="submit" name="edittask" value="Save Edit"></td></tr>
+            </tbody>
+        </table>
+        </form>
+        <br>
+    </div>
+</body>
+</html>
